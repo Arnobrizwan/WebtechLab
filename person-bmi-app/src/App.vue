@@ -15,92 +15,160 @@
 </template>
 
 <script>
+import PersonService from './services/personservice.js';
+
 export default {
   name: 'App',
   data() {
     return {
-      persons: [
-        {
-          name: "Hassan",
-          yob: 1995,
-          age: new Date().getFullYear() - 1995,
-          weight: 68,
-          height: 175,
-          bmi: (68 / ((175 / 100) ** 2)).toFixed(2),
-          category: 'normal',
-          photoUrl: "https://randomuser.me/api/portraits/men/44.jpg"
-        },
-        {
-          name: "Siti",
-          yob: 2000,
-          age: new Date().getFullYear() - 2000,
-          weight: 52,
-          height: 160,
-          bmi: (52 / ((160 / 100) ** 2)).toFixed(2),
-          category: 'normal',
-          photoUrl: "https://randomuser.me/api/portraits/women/3.jpg"
-        },
-        {
-          name: "Diah",
-          yob: 1988,
-          age: new Date().getFullYear() - 1988,
-          weight: 82,
-          height: 180,
-          bmi: (82 / ((180 / 100) ** 2)).toFixed(2),
-          category: 'overweight',
-          photoUrl: "https://randomuser.me/api/portraits/women/66.jpg"
-        }
-      ]
+      persons: []
     }
   },
+  created() {
+    this.loadPersons();
+  },
   methods: {
-    addPerson(person) {
-      // Calculate BMI and category
-      const weight = parseFloat(person.weight);
-      const height = parseFloat(person.height);
-      const bmi = (weight / ((height / 100) ** 2)).toFixed(2);
-      
-      let category = '';
-      if (bmi < 18.5) category = 'underweight';
-      else if (bmi < 24.9) category = 'normal';
-      else if (bmi < 29.9) category = 'overweight';
-      else category = 'obese';
-      
-      const newPerson = {
-        ...person,
-        age: new Date().getFullYear() - parseInt(person.yob),
-        bmi,
-        category
-      };
-      
-      this.persons.push(newPerson);
+    async loadPersons() {
+      try {
+        // Fetch all persons from the server
+        this.persons = await PersonService.getAllPersons();
+        
+        // If no persons exist yet, initialize with default data
+        if (this.persons.length === 0) {
+          const defaultPersons = [
+            {
+              name: "Hassan",
+              yob: 1995,
+              age: new Date().getFullYear() - 1995,
+              weight: 68,
+              height: 175,
+              bmi: (68 / ((175 / 100) ** 2)).toFixed(2),
+              category: 'normal',
+              photoUrl: "https://randomuser.me/api/portraits/men/44.jpg"
+            },
+            {
+              name: "Siti",
+              yob: 2000,
+              age: new Date().getFullYear() - 2000,
+              weight: 52,
+              height: 160,
+              bmi: (52 / ((160 / 100) ** 2)).toFixed(2),
+              category: 'normal',
+              photoUrl: "https://randomuser.me/api/portraits/women/3.jpg"
+            },
+            {
+              name: "Diah",
+              yob: 1988,
+              age: new Date().getFullYear() - 1988,
+              weight: 82,
+              height: 180,
+              bmi: (82 / ((180 / 100) ** 2)).toFixed(2),
+              category: 'overweight',
+              photoUrl: "https://randomuser.me/api/portraits/women/66.jpg"
+            }
+          ];
+          
+          // Add default persons to the server
+          for (const person of defaultPersons) {
+            await PersonService.addPerson(person);
+          }
+          
+          // Reload persons after adding defaults
+          this.persons = await PersonService.getAllPersons();
+        }
+      } catch (error) {
+        console.error('Failed to load persons:', error);
+        // Fallback to empty array if server not available
+        this.persons = [];
+      }
     },
-    updatePerson(index, updatedPerson) {
-      // Calculate BMI and category
-      const weight = parseFloat(updatedPerson.weight);
-      const height = parseFloat(updatedPerson.height);
-      const bmi = (weight / ((height / 100) ** 2)).toFixed(2);
-      
-      let category = '';
-      if (bmi < 18.5) category = 'underweight';
-      else if (bmi < 24.9) category = 'normal';
-      else if (bmi < 29.9) category = 'overweight';
-      else category = 'obese';
-      
-      // Keep the original yob and age
-      const yob = this.persons[index].yob;
-      const age = this.persons[index].age;
-      
-      this.persons[index] = {
-        ...updatedPerson,
-        yob,
-        age,
-        bmi,
-        category
-      };
+    
+    calculateBMI(weight, height) {
+      return (weight / ((height / 100) ** 2)).toFixed(2);
     },
-    deletePerson(index) {
-      this.persons.splice(index, 1);
+    
+    determineBMICategory(bmi) {
+      if (bmi < 18.5) return 'underweight';
+      else if (bmi < 24.9) return 'normal';
+      else if (bmi < 29.9) return 'overweight';
+      else return 'obese';
+    },
+    
+    async addPerson(person) {
+      try {
+        // Calculate BMI and category
+        const weight = parseFloat(person.weight);
+        const height = parseFloat(person.height);
+        const bmi = this.calculateBMI(weight, height);
+        const category = this.determineBMICategory(bmi);
+        
+        const newPerson = {
+          ...person,
+          age: new Date().getFullYear() - parseInt(person.yob),
+          weight,
+          height,
+          bmi,
+          category
+        };
+        
+        // Add person to server using POST
+        const addedPerson = await PersonService.addPerson(newPerson);
+        
+        // Update local array
+        this.persons.push(addedPerson);
+      } catch (error) {
+        console.error('Failed to add person:', error);
+        alert('Error adding person. Check if JSON Server is running.');
+      }
+    },
+    
+    async updatePerson(index, updatedPerson) {
+      try {
+        const personId = this.persons[index].id;
+        
+        // Calculate BMI and category
+        const weight = parseFloat(updatedPerson.weight);
+        const height = parseFloat(updatedPerson.height);
+        const bmi = this.calculateBMI(weight, height);
+        const category = this.determineBMICategory(bmi);
+        
+        // Keep original properties that aren't being updated
+        const yob = this.persons[index].yob;
+        const age = this.persons[index].age;
+        
+        const personToUpdate = {
+          ...this.persons[index],
+          ...updatedPerson,
+          yob,
+          age,
+          bmi,
+          category
+        };
+        
+        // Update person on server using PUT
+        const updated = await PersonService.updatePerson(personId, personToUpdate);
+        
+        // Update in local array
+        this.persons[index] = updated;
+      } catch (error) {
+        console.error('Failed to update person:', error);
+        alert('Error updating person. Check if JSON Server is running.');
+      }
+    },
+    
+    async deletePerson(index) {
+      try {
+        const personId = this.persons[index].id;
+        
+        // Delete person from server
+        await PersonService.deletePerson(personId);
+        
+        // Remove from local array
+        this.persons.splice(index, 1);
+      } catch (error) {
+        console.error('Failed to delete person:', error);
+        alert('Error deleting person. Check if JSON Server is running.');
+      }
     }
   }
 }
