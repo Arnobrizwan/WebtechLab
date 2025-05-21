@@ -1,0 +1,24 @@
+{
+    "persons": [
+      {
+        "id": 1,
+        "name": "Hassan",
+        "yob": 1995,
+        "age": 29,
+        "weight": 68,
+        "height": 175,
+        "bmi": "22.2",
+        "photoUrl": "https://randomuser.me/api/portraits/men/44.jpg"
+      },
+      {
+        "id": 2,
+        "name": "Siti",
+        "yob": 2000,
+        "age": 24,
+        "weight": 52,
+        "height": 160,
+        "bmi": "20.3",
+        "photoUrl": "https://randomuser.me/api/portraits/women/3.jpg"
+      }
+    ]
+  }
