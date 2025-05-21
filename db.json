@@ -1,24 +1,37 @@
 {
-    "persons": [
-      {
-        "id": 1,
-        "name": "Hassan",
-        "yob": 1995,
-        "age": 29,
-        "weight": 68,
-        "height": 175,
-        "bmi": "22.2",
-        "photoUrl": "https://randomuser.me/api/portraits/men/44.jpg"
-      },
-      {
-        "id": 2,
-        "name": "Siti",
-        "yob": 2000,
-        "age": 24,
-        "weight": 52,
-        "height": 160,
-        "bmi": "20.3",
-        "photoUrl": "https://randomuser.me/api/portraits/women/3.jpg"
-      }
-    ]
-  }
+  "persons": [
+    {
+      "id": "1",
+      "name": "Hassan",
+      "yob": 1995,
+      "age": 30,
+      "weight": 68,
+      "height": 175,
+      "bmi": "22.20",
+      "category": "normal",
+      "photoUrl": "https://randomuser.me/api/portraits/men/44.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Siti",
+      "yob": 2000,
+      "age": 25,
+      "weight": 52,
+      "height": 162,
+      "bmi": "19.81",
+      "category": "normal",
+      "photoUrl": "https://randomuser.me/api/portraits/women/3.jpg"
+    },
+    {
+      "id": "3",
+      "name": "Diah",
+      "yob": 1988,
+      "age": 37,
+      "weight": 82,
+      "height": 180,
+      "bmi": "25.31",
+      "category": "overweight",
+      "photoUrl": "https://randomuser.me/api/portraits/women/66.jpg"
+    }
+  ]
+}

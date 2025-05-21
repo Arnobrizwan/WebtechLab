@@ -11,14 +11,25 @@
     </nav>
 
     <router-view :persons="persons" @add-person="addPerson" @edit-person="updatePerson" @delete-person="deletePerson"/>
+    
+    <!-- Statistics components -->
+    <h3>Statistics / Analysis</h3>
+    <bmi-text :persons="persons"></bmi-text>
+    <bmi-stats :persons="persons"></bmi-stats>
   </div>
 </template>
 
 <script>
 import PersonService from './services/personservice.js';
+import BmiText from './components/BmiText.vue';
+import BmiStats from './components/BmiStats.vue';
 
 export default {
   name: 'App',
+  components: {
+    BmiText,
+    BmiStats
+  },
   data() {
     return {
       persons: []
