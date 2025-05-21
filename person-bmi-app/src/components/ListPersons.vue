@@ -1,32 +1,29 @@
 <template>
-    <div>
-      <h3>Person List</h3>
-      <ul>
-        <li v-for="(p, i) in persons" :key="p.id">
-          <div class="person-card">
-            <img v-if="p.photoUrl" :src="p.photoUrl" class="person-photo" />
-            <div>
-              <strong>[{{ i }}] {{ p.name }}</strong> (Age: {{ p.age }})<br>
-              Weight: {{ p.weight }}kg, Height: {{ p.height }}cm<br>
-              BMI: {{ p.bmi }}
-            </div>
+  <div>
+    <h3>Person List</h3>
+    <ul>
+      <li v-for="(person, index) in persons" :key="index">
+        <div class="person-card">
+          <img v-if="person.photoUrl" :src="person.photoUrl" alt="photo" class="person-photo">
+          <div>
+            <strong>[{{ index }}] {{ person.name }}</strong> (Age: {{ person.age }})<br>
+            Weight: {{ person.weight }} kg, Height: {{ person.height }} cm<br>
+            BMI: {{ person.bmi }}
           </div>
-        </li>
-      </ul>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        persons: []
-      }
-    },
-    mounted() {
-      fetch('http://localhost:3000/persons')
-        .then(res => res.json())
-        .then(data => this.persons = data);
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ListPersons',
+  props: {
+    persons: {
+      type: Array,
+      required: true
     }
   }
-  </script>
+}
+</script>

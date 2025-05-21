@@ -1,40 +1,76 @@
 <template>
-    <div>
-      <h3>Edit Person</h3>
-      <input v-model="id" placeholder="Enter ID to edit" />
-      <button @click="loadPerson">Load</button>
-  
-      <div v-if="person">
-        <input v-model="person.name" placeholder="Name" />
-        <input v-model="person.weight" type="number" placeholder="Weight" />
-        <input v-model="person.height" type="number" placeholder="Height" />
-        <input v-model="person.photoUrl" placeholder="Image URL" />
-        <button @click="updatePerson">Update</button>
-      </div>
+  <div>
+    <h3>Edit Person</h3>
+    <input type="number" v-model.number="index" placeholder="Enter index to edit" />
+    <div v-if="selectedPerson" class="feedback">
+      Editing: {{ selectedPerson.name }} (Index {{ index }})
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        id: '',
-        person: null
+    <div v-else class="feedback">
+      <em>Enter an index to load person data</em>
+    </div>
+    <div v-if="selectedPerson" class="edit-form-section">
+      <input type="text" v-model="form.name" placeholder="Name" />
+      <input type="number" v-model="form.weight" placeholder="Weight (kg)" />
+      <input type="number" v-model="form.height" placeholder="Height (cm)" />
+      <input type="text" v-model="form.photoUrl" placeholder="Image URL" />
+      <button @click="updatePerson">Update</button>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'EditPerson',
+  props: {
+    persons: {
+      type: Array,
+      required: true
+    }
+  },
+  data() {
+    return {
+      index: null,
+      form: {
+        name: '',
+        weight: '',
+        height: '',
+        photoUrl: ''
       }
-    },
-    methods: {
-      loadPerson() {
-        fetch(`http://localhost:3000/persons/${this.id}`)
-          .then(res => res.json())
-          .then(data => this.person = data);
-      },
-      updatePerson() {
-        fetch(`http://localhost:3000/persons/${this.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.person)
-        }).then(() => alert('Updated!'));
+    }
+  },
+  computed: {
+    selectedPerson() {
+      if (this.index !== null && this.index >= 0 && this.index < this.persons.length) {
+        return this.persons[this.index];
+      }
+      return null;
+    }
+  },
+  watch: {
+    selectedPerson(newValue) {
+      if (newValue) {
+        this.form = {
+          name: newValue.name,
+          weight: newValue.weight,
+          height: newValue.height,
+          photoUrl: newValue.photoUrl
+        };
+      } else {
+        this.form = {
+          name: '',
+          weight: '',
+          height: '',
+          photoUrl: ''
+        };
+      }
+    }
+  },
+  methods: {
+    updatePerson() {
+      if (this.selectedPerson) {
+        this.$emit('edit-person', this.index, { ...this.form });
       }
     }
   }
-  </script>
+}
+</script>
